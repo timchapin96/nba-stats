@@ -28,7 +28,7 @@ pool.connect((err, client, release) => {
     console.error('Error connecting to postgreSQL', err)
     return
   }
-  console.log('Connected to postgreSQL database')
+  console.log('Connected to postgreSQL database' + ' ' + NAME)
 
   release()
 })
@@ -37,7 +37,35 @@ app.listen(PORT, () => {
   console.log(`Server listening on http://localhost:${PORT}`)
 })
 
-app.get('/', (req, res) => {
-  console.log('WE MADE IT');
-  console.log(PORT);
+app.get('/', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM team')
+    if (result.rows.length !== 0) {
+      console.log(result.rows)
+      res.json(result.rows)
+    } else {
+      console.log(`data not found`)
+      res.status(404).send('Team not found')
+    }
+  } catch (err) {
+    console.error('Error executing query', err)
+    res.status(500).send('Error executing query')
+  }
+})
+
+app.get('/team/:teamId', async (req,res) => {
+  const { teamId } = req.params;
+  try {
+    const result = await pool.query(`SELECT * FROM game WHERE home_team_id = ${teamId} OR visitor_team_id = ${teamId}`)
+    console.log(result.rows.length);
+    if (result.rows.length !== 0) {
+      res.json(result.rows)
+    } else {
+      console.log(`Team with ${teamId} ID was not found in the database`)
+      res.status(404).send('Team not found')
+    }
+  } catch (err) {
+    console.error('Error executing query', err)
+    res.status(500).send('Error executing query')
+  }
 })
