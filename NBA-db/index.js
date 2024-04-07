@@ -41,7 +41,6 @@ app.get('/', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM team')
     if (result.rows.length !== 0) {
-      console.log(result.rows)
       res.json(result.rows)
     } else {
       console.log(`data not found`)
