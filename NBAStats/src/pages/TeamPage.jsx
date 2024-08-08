@@ -14,8 +14,13 @@ export default function TeamPage () {
       })
       .catch(error => console.log(error))
   }, [teamId])
+
   return (
     <div>
+      <label for='games'>Select a year</label>
+      <select id='games' name='year'>
+        <option value='2001'>2001</option>
+      </select>
       <h1>Team Page</h1>
       {games.map(game => (
         <div key={game.id}>
